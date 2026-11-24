@@ -17,7 +17,8 @@ PublisherGUI ──publish(topic,msg)──► NotificationServer ──notify()
 ```
 - **Topics:** Sports, Technology, Business, Entertainment.
 - Subscribers register a **remote callback** (`SubscriberInterface`), so the server can push messages without polling.
-- `subscribe` and `unsubscribe` are `synchronized`, so concurrent subscriber changes are safe.
+- `subscribe` and `unsubscribe` are `synchronized`, and subscriber sets are concurrent, so changes during publishing are safe.
+- **Fault tolerance:** if a subscriber becomes unreachable (e.g. its window was closed), the server removes it after the failed delivery, instead of retrying a dead connection on every publish.
 - Swing GUIs for both the publisher and the subscribers.
 
 **Run** (from `pubsub-event-notification/`):
@@ -25,6 +26,12 @@ PublisherGUI ──publish(topic,msg)──► NotificationServer ──notify()
 javac -d out shared/*.java server/*.java client/*.java
 java -cp out server.PublisherApp      # starts the registry + server + publisher GUI
 java -cp out client.SubscriberApp     # start one or more subscribers
+```
+
+**Test** the unreachable-subscriber handling (headless, no GUI):
+```bash
+javac -d out shared/*.java server/*.java client/*.java test/*.java
+java -cp out test.DeadSubscriberTest   # expected: alive=2 dead=1  PASS
 ```
 
 ## 2. Multi-Server Product Search (Sockets)

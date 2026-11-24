@@ -35,19 +35,20 @@ public class NotificationServer extends UnicastRemoteObject implements Publisher
     @Override
     public void publishNotification(String topic, String message) throws RemoteException {
         Set<SubscriberInterface> subscribers = topicSubscribers.getOrDefault(topic, Collections.emptySet());
-        subscribers.forEach(sub -> {
+        int delivered = 0;
+        for (SubscriberInterface sub : subscribers) {
             try {
                 sub.receiveNotification(topic, message);
+                delivered++;
             } catch (RemoteException e) {
-                try {
-                    System.err.println("Failed to notify " + sub.getSubscriberId());
-                } catch (RemoteException e1) {
-                    // TODO Auto-generated catch block
-                    e1.printStackTrace();
-                }
+                // The subscriber is unreachable (e.g. its application was closed). Drop it so
+                // later publishes don't keep retrying a dead connection. (The set is concurrent,
+                // so removing while iterating is safe.)
+                subscribers.remove(sub);
+                System.err.println("Removed unreachable subscriber from " + topic + ": " + e.getMessage());
             }
-        });
-        System.out.println("Published to " + subscribers.size() + " subscribers of " + topic);
+        }
+        System.out.println("Published to " + delivered + " subscriber(s) of " + topic);
     }
 
     public static void main(String[] args) {
