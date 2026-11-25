@@ -1,0 +1,25 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: build and test (JDK 17)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - name: Compile the socket product search
+        run: javac -Xlint:all -d out-search $(find multi-server-product-search/src -name '*.java')
+      - name: Compile and run the publish-subscribe test
+        run: cd pubsub-event-notification && javac -d out shared/*.java server/*.java client/*.java test/*.java && java -cp out test.DeadSubscriberTest

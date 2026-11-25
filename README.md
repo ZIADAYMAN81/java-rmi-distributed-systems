@@ -1,5 +1,7 @@
 # Distributed Systems in Java: RMI & Sockets
 
+[![tests](https://github.com/ZIADAYMAN81/java-rmi-distributed-systems/actions/workflows/tests.yml/badge.svg)](https://github.com/ZIADAYMAN81/java-rmi-distributed-systems/actions/workflows/tests.yml)
+
 > Distributed Systems coursework, The British University in Egypt. Two small distributed applications built with core Java, with no frameworks. Both compile with JDK 19.
 
 | Project | Communication | What it shows |
@@ -50,3 +52,6 @@ Remote interfaces and stubs, `UnicastRemoteObject`, RMI registry, callbacks, cli
 
 ## Requirements
 JDK 8 or later. No external libraries.
+
+## License
+MIT, see [LICENSE](LICENSE).
